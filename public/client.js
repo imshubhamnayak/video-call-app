@@ -72,6 +72,7 @@ function setupSocketListeners() {
         delete remoteNames[userId];
         const el = document.getElementById(`video-${userId}`);
         if (el) el.remove();
+        updateVideoLayout();
     });
 
     socket.on('signal', async ({ from, data }) => {
@@ -167,8 +168,14 @@ function addVideoStream(id, stream, name, isLocal = false) {
 
     const container = document.getElementById('videos');
     const wrapper = document.createElement('div');
-    wrapper.className = 'video-container bg-slate-800 rounded-2xl overflow-hidden';
     wrapper.id = `video-${id}`;
+
+    // Local = small floating PiP (portrait), Remote = main tiles
+    if (isLocal) {
+        wrapper.className = 'video-container local';
+    } else {
+        wrapper.className = 'video-container remote';
+    }
 
     const video = document.createElement('video');
     video.srcObject = stream;
@@ -183,6 +190,25 @@ function addVideoStream(id, stream, name, isLocal = false) {
     wrapper.appendChild(video);
     wrapper.appendChild(nameTag);
     container.appendChild(wrapper);
+
+    updateVideoLayout();
+}
+
+function updateVideoLayout() {
+    const videosEl = document.getElementById('videos');
+    const remoteVideos = videosEl.querySelectorAll('.video-container.remote');
+    const count = remoteVideos.length;
+
+    videosEl.classList.remove('one-remote', 'multiple');
+
+    if (count === 0) {
+        // only local (waiting for others)
+        return;
+    } else if (count === 1) {
+        videosEl.classList.add('one-remote');
+    } else {
+        videosEl.classList.add('multiple');
+    }
 }
 
 window.toggleMute = function () {
