@@ -8,24 +8,98 @@
     <style>
         video {
             background: #1e293b;
-            border-radius: 1rem;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
-        .video-container {
+
+        #videos {
             position: relative;
-            aspect-ratio: 16/9;
+            background: #0f172a;
         }
+
+        /* Remote videos - main area */
+        .video-container.remote {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #1e293b;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Local video - WhatsApp style PiP overlay (portrait) */
+        .video-container.local {
+            position: absolute;
+            bottom: 100px;
+            right: 16px;
+            width: 110px;
+            height: 160px; /* portrait ratio */
+            z-index: 30;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            background: #1e293b;
+        }
+
         .user-name {
             position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background: rgba(0,0,0,0.6);
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0,0,0,0.65);
             color: white;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 6px;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
+            max-width: 90%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Layout modes */
+        #videos.one-remote {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #videos.one-remote .video-container.remote {
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: 9/16; /* prefer portrait */
+            height: auto;
+            width: auto;
+        }
+
+        #videos.multiple {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 8px;
+            padding: 8px;
+            align-content: center;
+        }
+
+        #videos.multiple .video-container.remote {
+            aspect-ratio: 9/16;
+            height: auto;
+        }
+
+        /* On larger screens keep a bit more space */
+        @media (min-width: 768px) {
+            .video-container.local {
+                width: 140px;
+                height: 200px;
+                bottom: 110px;
+                right: 24px;
+            }
+            #videos.multiple {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 12px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -69,9 +143,9 @@
             </button>
         </div>
 
-        <!-- Videos Grid -->
-        <div id="videos" class="flex-1 p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto">
-            <!-- Local video will be added here -->
+        <!-- Videos area -->
+        <div id="videos" class="flex-1 overflow-hidden relative">
+            <!-- Videos will be added here by JS -->
         </div>
 
         <!-- Controls -->
@@ -92,4 +166,3 @@
     <script src="/client.js"></script>
 </body>
 </html>
-
